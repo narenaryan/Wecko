@@ -3,6 +3,7 @@ import pygal
 from pygal.style import NeonStyle,DarkGreenBlueStyle
 from flask import Flask, Response , render_template
 import urllib2,json
+from countries import COUNTRY
 
 #Function returns celsius from Farenheit
 def f_to_c(n):
@@ -14,6 +15,11 @@ app = Flask(__name__ , static_url_path='')
 
 url = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22Hyderabad%2CIndia%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys"
 ans = json.load(urllib2.urlopen(url))
+
+def country_temp(country):
+    url = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22"+ country +"%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys"
+    con = json.load(urllib2.urlopen(url))
+    return f_to_c(int(con['query']['results']['channel']['item']['condition']['temp']))
  
 def get_forecast():
     global ans
@@ -38,6 +44,8 @@ def get_pressure():
     global ans
     return float(ans['query']['results']['channel']['atmosphere']['pressure'])
 
+def store_temperatures():
+    pass
 
 @app.route('/')
 def index():
@@ -46,7 +54,8 @@ def index():
     print details['date']
     return render_template('index.html' , details = { 'date' : details['date'] ,
                                                      'condition' : details['text'],
-                                                     'temperature' : int(f_to_c(float(details['temp'])))})
+                                                     'temperature' : int(f_to_c(float(details['temp']))) ,
+                                                     } , countries = COUNTRY)
  
  
 #To display forecast frame
@@ -73,6 +82,21 @@ def humidity():
     pie_chart.render()
     return Response(response=pie_chart.render(), content_type='image/svg+xml')
 
+#To display Country heat map
+@app.route('/cmap/<ccode>')
+def country_map(ccode):
+    country = COUNTRY[ccode]
+    print country,ccode
+    temperature = country_temp(country)
+    print temperature
+    worldmap_chart = pygal.Worldmap()
+    worldmap_chart.title = 'Country heat map (updates every one hour)'
+    worldmap_chart.add('Select Country', {
+                                ccode.lower() : int(temperature)
+                            }
+                    )
+    return Response(response=worldmap_chart.render(), content_type='image/svg+xml')
+
 #To display Pressure frame
 @app.route('/pressure/')
 def pressure():
@@ -82,7 +106,6 @@ def pressure():
     pressure = get_pressure()
     pie_chart.add('Filled', pressure)
     pie_chart.add('Unfilled', 100 - pressure)
-    pie_chart.render()
     return Response(response=pie_chart.render(), content_type='image/svg+xml')
  
 if __name__ == '__main__':
