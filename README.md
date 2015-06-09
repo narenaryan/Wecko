@@ -12,7 +12,9 @@ It has Four Areas in Dashboard
 install pygal before running application.
 Running the application
 
-$ python major.py
+$ python main.py
+
+go to http://localhost:5000 and see trending Dashboard. :)
 
 
 Todo
