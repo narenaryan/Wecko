@@ -46,7 +46,7 @@ def index():
     print details['date']
     return render_template('index.html' , details = { 'date' : details['date'] ,
                                                      'condition' : details['text'],
-                                                     'temperature' : f_to_c(float(details['temp']))})
+                                                     'temperature' : int(f_to_c(float(details['temp'])))})
  
  
 #To display forecast frame
