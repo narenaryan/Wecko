@@ -15,7 +15,7 @@ Running the application
 $ python major.py
 
 
-  Todo
- ======
+Todo
+======
 
 Country heat map updated by realtime API.
