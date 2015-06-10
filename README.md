@@ -17,6 +17,9 @@ $ python main.py
 go to http://localhost:5000 and see trending Dashboard. :)
 
 
+### For online demo app visit
+[Wecko](http://weather.devopsboy.in)
+
 Todo
 ======
 
