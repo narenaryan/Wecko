@@ -2,6 +2,9 @@
 A weather monitoring Dashboard built upon Python Flask and Yahoo API
 
 ***
+Dashboard view
+![Wecko]
+(http://postimg.org/image/xwj74rkyz/)
 
 It has five areas in Dashboard
 
